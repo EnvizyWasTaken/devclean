@@ -68,7 +68,6 @@ Total reclaimable: 3.09 GB
 ### 🔧 Prerequisites
 
 - Rust toolchain installed  
-  Install with:
 
 ```bash
 curl https://sh.rustup.rs -sSf | sh
@@ -138,15 +137,12 @@ devclean /
 ## 🧠 How It Works
 
 ### 1. Directory Traversal
-
-- Uses `walkdir` to recursively scan directories
-- Skips ignored paths early for performance
+- Uses `walkdir` to recursively scan directories  
+- Skips ignored paths early for performance  
 
 ---
 
 ### 2. Junk Detection
-
-Matches directories against known patterns:
 
 ```rust
 ["target", "node_modules", "__pycache__"]
@@ -155,54 +151,45 @@ Matches directories against known patterns:
 ---
 
 ### 3. Parallel Size Calculation
-
-- Uses `rayon` for multi-threaded file processing
-- Computes directory sizes efficiently
+- Uses `rayon` for multi-threaded processing  
+- Efficient aggregation of file sizes  
 
 ---
 
 ### 4. Smart Skipping
-
-Once a junk directory is found:
-
-- It is measured once
-- Its contents are **not traversed further**
-
-This prevents exponential slowdown from nested structures like:
-
-```
-node_modules/node_modules/node_modules/...
-```
+- Junk directories are measured once  
+- Their contents are not traversed again  
 
 ---
 
 ### 5. Safety Classification
-
-Each result is labeled:
-
-- `[USER]` → inside `/home` (safe to clean)
-- `[SYSTEM]` → outside `/home` (potentially unsafe)
+- `[USER]` → inside `/home`  
+- `[SYSTEM]` → outside `/home`  
 
 ---
 
 ## 🔒 Safety Model
 
-`devclean` is **non-destructive by default**:
+- Non-destructive by default  
+- No automatic deletion  
+- System paths clearly flagged  
 
-- No files are deleted automatically
-- System paths are flagged clearly
-- You remain in control of all actions
+---
+
+## ❤️ Support
+
+If you find this project useful, you can support it with crypto:
+
+- **BTC:** `bc1qv9mgzgrs49jmp6zregkamyzj88s9u8ckkrst5d`  
+- **ETH:** `0xc0d962c5F2DD520aA98E917cCaaf0534BA32001f`  
 
 ---
 
 ## ⚙️ Configuration (Planned)
 
-Future improvements may include:
-
-- `.devclean.toml` config file
-- Custom ignore rules
-- User-defined junk patterns
-- Path whitelisting / blacklisting
+- `.devclean.toml` config file  
+- Custom ignore rules  
+- User-defined junk patterns  
 
 ---
 
@@ -211,7 +198,7 @@ Future improvements may include:
 - [ ] Interactive cleaning (`devclean clean`)
 - [ ] Dry-run mode
 - [ ] Safe delete (move to trash)
-- [ ] Output grouping (Rust / Node / Python)
+- [ ] Output grouping
 - [ ] Top-N largest junk view
 - [ ] CLI flags (`--min-size`, `--top`, `--user-only`)
 
@@ -221,22 +208,12 @@ Future improvements may include:
 
 Contributions are welcome.
 
-If you have ideas for:
-- performance improvements
-- better detection rules
-- UX enhancements
-
-Feel free to open an issue or submit a PR.
-
 ---
 
 ## ⚠️ Disclaimer
 
-`devclean` identifies directories commonly safe to delete, but:
-
-> **Always verify before removing anything.**
-
-Deleting system files may break applications.
+Always verify before deleting anything.  
+System file removal may break applications.
 
 ---
 
