@@ -1,38 +1,65 @@
-# devclean
+# 🧹 devclean
 
-> A fast, intelligent CLI tool for scanning and cleaning development junk across your system.
+> Fast, intelligent CLI tool to find and clean development junk across your system.
 
-`devclean` helps you reclaim disk space by identifying build artifacts, dependency folders, and cache directories commonly generated during development workflows.
+![Rust](https://img.shields.io/badge/Rust-1.70+-orange)
+![License](https://img.shields.io/badge/license-MIT-blue)
 
 ---
 
-## ✨ Features
+## ⚡ Quick Start
 
-- ⚡ **Fast scanning** with parallel filesystem traversal
-- 🧠 **Smart filtering** to reduce noise and highlight meaningful results
-- 🔒 **Safe-by-default** (distinguishes user vs system paths)
-- 📦 Supports common dev junk:
-  - Rust (`target/`)
-  - Node.js (`node_modules/`)
-  - Python (`__pycache__/`)
-- 🚫 Ignores irrelevant/system-heavy directories automatically
-- 🧭 Works across entire filesystems (`/`) or scoped paths
+```bash
+cargo install --path .
+devclean
+```
+
+---
+
+## ✨ What is devclean?
+
+Modern development environments generate massive amounts of junk:
+
+- Rust `target/` folders  
+- Node.js `node_modules/`  
+- Python `__pycache__/`  
+- Temporary build artifacts  
+
+Over time, these silently consume **gigabytes of disk space**.
+
+**devclean** scans your system and shows exactly where that space is going — fast.
 
 ---
 
 ## 📸 Example
 
 ```bash
-$ devclean /
+devclean /
 ```
 
 ```text
-[USER]   /home/user/project/target (819 MB)
-[USER]   /home/user/api/node_modules (320 MB)
+[USER]   /home/eve/Desktop/RustProjects/frisk/target (819 MB)
+[USER]   /home/eve/RustroverProjects/TUITemplate/target (329 MB)
+[USER]   /home/eve/.local/share/opencode/bin/node_modules (21 MB)
 [SYSTEM] /usr/lib/node_modules (40 MB)
 
 Total reclaimable: 3.09 GB
 ```
+
+---
+
+## 🚀 Features
+
+- ⚡ **Fast scanning**
+  - Parallel file processing using `rayon`
+- 🧠 **Smart detection**
+  - Identifies common dev junk automatically
+- 🔒 **Safe by default**
+  - Distinguishes user vs system paths
+- 🚫 **Noise reduction**
+  - Ignores irrelevant directories (`.cache`, `.cargo`, etc.)
+- 🧭 **Flexible scope**
+  - Scan current directory or entire filesystem
 
 ---
 
@@ -41,29 +68,24 @@ Total reclaimable: 3.09 GB
 ### 🔧 Prerequisites
 
 - Rust toolchain installed  
-  Install via:
+  Install with:
 
 ```bash
 curl https://sh.rustup.rs -sSf | sh
-```
-
-Then:
-
-```bash
 rustup update
 ```
 
 ---
 
-### 📦 Install from source
+### 📦 Build from source
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/devclean.git
+git clone https://github.com/EnvizyWasTaken/devclean.git
 cd devclean
 cargo build --release
 ```
 
-Binary will be located at:
+Binary will be available at:
 
 ```bash
 target/release/devclean
@@ -71,13 +93,13 @@ target/release/devclean
 
 ---
 
-### 🚀 Optional: Install globally
+### 🌍 Install globally
 
 ```bash
 cargo install --path .
 ```
 
-Then run anywhere:
+Then run:
 
 ```bash
 devclean
@@ -95,59 +117,47 @@ devclean
 
 ---
 
-### 📂 Scan specific path
+### 📂 Scan a specific path
 
 ```bash
-devclean /home/user/projects
+devclean /home/eve/projects
 ```
 
 ---
 
-### 🌍 Scan entire system (read-only)
+### 🌍 Scan entire system
 
 ```bash
 devclean /
 ```
 
-> ⚠️ This may take longer depending on system size.
+> ⚠️ May take longer depending on disk size.
 
 ---
 
 ## 🧠 How It Works
 
-`devclean` performs a recursive filesystem scan using `walkdir`, applying several layers of filtering and optimization:
-
----
-
 ### 1. Directory Traversal
 
-- Recursively walks directories using a streaming iterator
-- Skips ignored directories early (`.cache`, `.cargo`, etc.)
-- Avoids unnecessary recursion into irrelevant paths
+- Uses `walkdir` to recursively scan directories
+- Skips ignored paths early for performance
 
 ---
 
 ### 2. Junk Detection
 
-Each directory is checked against a predefined rule set:
+Matches directories against known patterns:
 
 ```rust
-["node_modules", "target", "__pycache__"]
+["target", "node_modules", "__pycache__"]
 ```
-
-If a match is found:
-- It is classified as “junk”
-- Its total size is calculated
 
 ---
 
 ### 3. Parallel Size Calculation
 
-Directory size is computed using parallel iteration:
-
 - Uses `rayon` for multi-threaded file processing
-- Aggregates file sizes efficiently
-- Significantly faster than sequential scanning
+- Computes directory sizes efficiently
 
 ---
 
@@ -158,7 +168,7 @@ Once a junk directory is found:
 - It is measured once
 - Its contents are **not traversed further**
 
-This avoids exponential slowdown from nested directories like:
+This prevents exponential slowdown from nested structures like:
 
 ```
 node_modules/node_modules/node_modules/...
@@ -168,34 +178,29 @@ node_modules/node_modules/node_modules/...
 
 ### 5. Safety Classification
 
-Each result is classified:
+Each result is labeled:
 
 - `[USER]` → inside `/home` (safe to clean)
 - `[SYSTEM]` → outside `/home` (potentially unsafe)
-
-This ensures:
-
-- visibility of system junk
-- prevention of accidental damage
 
 ---
 
 ## 🔒 Safety Model
 
-By default, `devclean` is **non-destructive**:
+`devclean` is **non-destructive by default**:
 
-- It only scans and reports
 - No files are deleted automatically
-
-System paths are flagged but not filtered unless explicitly handled.
+- System paths are flagged clearly
+- You remain in control of all actions
 
 ---
 
 ## ⚙️ Configuration (Planned)
 
-Future versions may support:
+Future improvements may include:
 
-- Custom ignore rules (`.devclean.toml`)
+- `.devclean.toml` config file
+- Custom ignore rules
 - User-defined junk patterns
 - Path whitelisting / blacklisting
 
@@ -203,12 +208,12 @@ Future versions may support:
 
 ## 🚀 Roadmap
 
-- [ ] Interactive deletion (`devclean clean`)
+- [ ] Interactive cleaning (`devclean clean`)
 - [ ] Dry-run mode
-- [ ] Trash support (safe delete instead of permanent)
-- [ ] Output grouping (by type)
+- [ ] Safe delete (move to trash)
+- [ ] Output grouping (Rust / Node / Python)
 - [ ] Top-N largest junk view
-- [ ] Config file support
+- [ ] CLI flags (`--min-size`, `--top`, `--user-only`)
 
 ---
 
@@ -217,21 +222,21 @@ Future versions may support:
 Contributions are welcome.
 
 If you have ideas for:
-- new junk detection rules
 - performance improvements
+- better detection rules
 - UX enhancements
 
-Open an issue or PR.
+Feel free to open an issue or submit a PR.
 
 ---
 
 ## ⚠️ Disclaimer
 
-`devclean` identifies directories commonly considered safe to delete, but:
+`devclean` identifies directories commonly safe to delete, but:
 
-> **You are responsible for what you remove.**
+> **Always verify before removing anything.**
 
-Always verify before deleting anything, especially outside your home directory.
+Deleting system files may break applications.
 
 ---
 
