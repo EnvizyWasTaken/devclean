@@ -1,4 +1,4 @@
-# 🧹 devclean
+# devclean
 
 > A fast, intelligent CLI tool for scanning and cleaning development junk across your system.
 
